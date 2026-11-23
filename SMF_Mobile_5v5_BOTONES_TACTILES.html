@@ -1,0 +1,276 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>SMF Mobile 3D — Copa Mega</title><style>*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080f20;color:white;font-family:system-ui,-apple-system,sans-serif;touch-action:none}#game{position:relative;width:100%;height:100dvh;min-height:300px}canvas{position:absolute;inset:0;width:100%;height:100%;display:block}#hud{position:absolute;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);font-weight:900;background:#06172bcc;border:1px solid #8cc8c54d;border-radius:12px;padding:9px 18px;white-space:nowrap;pointer-events:none}#notice{position:absolute;top:62px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap;color:#ffe26e;font-weight:bold;text-shadow:0 2px 6px black;pointer-events:none}#bottom{position:absolute;bottom:max(112px,calc(env(safe-area-inset-bottom) + 96px));left:14px;right:14px;display:flex;justify-content:space-between;align-items:end;pointer-events:none;z-index:4}#stick{width:115px;height:115px;border:2px solid #ffffff89;border-radius:50%;background:#111e3fa8;position:relative;pointer-events:auto;touch-action:none}#nub{position:absolute;width:46px;height:46px;background:#75deff;border:3px solid white;border-radius:50%;left:32.5px;top:32.5px;box-shadow:0 0 12px #68d9ff99}.actions{display:flex;gap:9px;align-items:end;pointer-events:auto}button{cursor:pointer;-webkit-tap-highlight-color:transparent;font-weight:900;color:white;border:2px solid #ffffffa0;border-radius:50%;background:#1866ca;touch-action:none;-webkit-user-select:none;user-select:none}#pass{height:65px;width:65px}#shoot{height:80px;width:80px;background:#e83558}#sprint,#switch{height:53px;width:53px;background:#0e927d;font-size:10px}#switch{background:#7052ce}select{background:#152d48;color:white;padding:8px;border:1px solid #5ca8b5;border-radius:8px;max-width:165px}#menu p{max-width:470px}#hud{font-size:clamp(9px,2vw,14px)}#menu,#error{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#07172de8;text-align:center;padding:24px;z-index:10}#menu h1{font-size:clamp(58px,16vw,105px);margin:0;color:#55ddff;font-style:italic;line-height:1}#menu h2{font-size:16px;letter-spacing:2px;margin:15px 0;color:#a0ffb4}#start{background:#26df83;color:#061b1b;font-size:17px;border-radius:15px;padding:16px 28px;margin-top:20px}#error{display:none;background:#101825;line-height:1.5}#error p{max-width:450px}#hint{font-size:12px;color:#d9e4f9;margin-top:10px}#pauseButton{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;z-index:6;padding:9px 13px;background:#122f48e8;border:1px solid #a8ebee9c;border-radius:10px;font-size:13px;display:none}#pauseMenu{position:absolute;inset:0;z-index:12;background:#061326ed;display:none;flex-direction:column;justify-content:center;align-items:center;gap:12px;text-align:center;padding:18px}#pauseMenu h2{font-size:32px;margin:0;color:#71eaff}#pauseMenu button{border-radius:12px;width:min(290px,85vw);padding:14px;background:#1666a4;font-size:17px}#pauseMenu button:first-of-type{background:#1ecf83;color:#08211f}#status{font-size:12px;color:#7eecd1;position:absolute;bottom:4px;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}@media(max-width:430px){#stick{width:93px;height:93px}#nub{left:23.5px;top:23.5px}#pass{width:57px;height:57px;font-size:11px}#shoot{width:68px;height:68px;font-size:12px}#sprint,#switch{width:48px;height:48px;font-size:9px}.actions{gap:5px}#bottom{left:9px;right:9px}}</style></head><body><div id="game"><canvas id="canvas"></canvas><div id="hud"><span id="teamleft">CHAMPIONS DE PC</span> <span id="score">0 : 0</span> <span id="teamright">MEGA BULBON FC</span></div><div id="notice"></div><button id="pauseButton" type="button" aria-label="Pausar partido">Ⅱ PAUSA</button><div id="pauseMenu"><h2>⏸ PARTIDO EN PAUSA</h2><p>SMF · COPA MEGA</p><button id="resumeButton" type="button">▶ CONTINUAR</button><button id="restartButton" type="button">↻ REINICIAR PARTIDO</button><button id="menuButton" type="button">⌂ MENÚ PRINCIPAL</button><p style="font-size:12px;color:#bad5df">PC: ESC o START del mando · Mobile: botón PAUSA</p></div><div id="bottom" aria-label="Controles de SMF"><div id="stick"><div id="nub"></div></div><div class="actions"><button id="switch">CAMBIO</button><button id="sprint">CORRER</button><button id="pass">PASE</button><button id="shoot">TIRO</button></div></div><div id="status">SMF 5V5 · 3D REAL · VERSIÓN NUEVA</div><div id="menu"><h2>SÚPER MEGA FOOTBALL</h2><h1>SMF</h1><div style="font-weight:900;font-size:25px" id="edition">MOBILE 3D · CANCHA AMPLIADA</div><p>5 contra 5 · Arcos visibles · Porteros que pueden fallar · CPU con pases y robos · Pausa</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><label>Tu club <select id="teamSelect"><option value="0">Champions de PC</option><option value="1">Mega Bulbon FC</option><option value="2">Titanes del Trueno</option><option value="3">Estrella Cósmica</option></select></label><label>Rival <select id="opponentSelect"><option value="1">Mega Bulbon FC</option><option value="0">Champions de PC</option><option value="2">Titanes del Trueno</option><option value="3">Estrella Cósmica</option></select></label></div><button id="start">⚽ JUGAR PARTIDO</button><div id="hint">Consejo: gira el iPad en horizontal</div></div><div id="error"><h2>⚠️ No se pudo activar el 3D</h2><p>Este visor no permite WebGL. Abre el juego en Safari desde una página web (https://) o en un navegador que permita gráficos 3D. Un archivo HTML en la vista previa de ChatGPT puede bloquearlo.</p><p id="detail"></p></div></div><script>
+(function(){'use strict';
+const canvas=document.getElementById('canvas'),notice=document.getElementById('notice'),menu=document.getElementById('menu'),error=document.getElementById('error');let gl;
+const CLUBS=[{name:'CHAMPIONS DE PC',shirt:[.08,.43,.94],trim:[.97,.86,.19]},{name:'MEGA BULBON FC',shirt:[.78,.08,.3],trim:[.98,.79,.22]},{name:'TITANES DEL TRUENO',shirt:[.38,.18,.82],trim:[.71,.94,.98]},{name:'ESTRELLA CÓSMICA',shirt:[.03,.69,.52],trim:[.94,.94,.98]}];
+let homeIndex=0,awayIndex=1,isPC=false,localTwo=false,gamepads={},secondKeys={},currentPlayer=0,paused=false;
+const launchButton=document.getElementById('start');
+launchButton.addEventListener('click',function(){
+  launchButton.textContent='INICIANDO PARTIDO...';
+  if(!gl){document.getElementById('detail').textContent='No se pudo activar WebGL en este visor. Prueba abrirlo desde Safari como página web HTTPS.';error.style.display='flex';return;}
+  try{homeIndex=Number(document.getElementById('teamSelect').value);awayIndex=Number(document.getElementById('opponentSelect').value);if(homeIndex===awayIndex){awayIndex=(homeIndex+1)%4;document.getElementById('opponentSelect').value=awayIndex;}playing=true;paused=false;document.getElementById('pauseMenu').style.display='none';document.getElementById('pauseButton').style.display='block';launchButton.textContent='⚽ JUGAR PARTIDO';score=[0,0];reset();menu.style.display='none';toast('¡COMIENZA EL 5 CONTRA 5!');render();}
+  catch(e){menu.style.display='flex';launchButton.textContent='REINTENTAR';document.getElementById('hint').textContent='Error: '+e.message;}
+});
+window.addEventListener('error',function(e){document.getElementById('hint').textContent='Error de juego: '+e.message;});
+try{gl=canvas.getContext('webgl',{antialias:true,alpha:false,depth:true,preserveDrawingBuffer:false})||canvas.getContext('experimental-webgl')}catch(e){}
+if(!gl){error.style.display='flex';document.getElementById('detail').textContent='WebGL no disponible en este navegador.';return}
+const vert='attribute vec3 aPos;attribute vec3 aColor;uniform mat4 uVP;varying vec3 vCol;void main(){gl_Position=uVP*vec4(aPos,1.0);vCol=aColor;}';
+const frag='precision mediump float;varying vec3 vCol;void main(){gl_FragColor=vec4(vCol,1.0);}';
+function shader(type,source){let s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
+let program;try{program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vert));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,frag));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program)}catch(e){error.style.display='flex';document.getElementById('detail').textContent=e.message;return}
+const aPos=gl.getAttribLocation(program,'aPos'),aColor=gl.getAttribLocation(program,'aColor'),uVP=gl.getUniformLocation(program,'uVP');let buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(aPos);gl.enableVertexAttribArray(aColor);gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(aColor,3,gl.FLOAT,false,24,12);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.04,.1,.17,1);
+function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}function norm(a){let n=Math.hypot(...a)||1;return a.map(v=>v/n)}function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function mul(a,b){let out=new Float32Array(16);for(let j=0;j<4;j++)for(let i=0;i<4;i++){let n=0;for(let k=0;k<4;k++)n+=a[k*4+i]*b[j*4+k];out[j*4+i]=n}return out}
+function perspective(fov,aspect,near,far){let f=1/Math.tan(fov/2),m=new Float32Array(16);m[0]=f/aspect;m[5]=f;m[10]=(far+near)/(near-far);m[11]=-1;m[14]=2*far*near/(near-far);return m}
+function lookAt(eye,center,up){let z=norm(eye.map((v,i)=>v-center[i])),x=norm(cross(up,z)),y=cross(z,x);return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1])}
+let verts=[];function vertex(a,color){verts.push(a[0],a[1],a[2],color[0],color[1],color[2])}function tri(a,b,c,color){vertex(a,color);vertex(b,color);vertex(c,color)}function quad(a,b,c,d,color){tri(a,b,c,color);tri(a,c,d,color)}function shade(color,s){return color.map(a=>Math.min(1,a*s))}
+function box(x,y,z,w,h,d,color){let x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;
+quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],shade(color,.9));quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],shade(color,.75));quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],shade(color,.7));quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],shade(color,.82));quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],shade(color,1.15));quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],shade(color,.55))}
+function sphere(x,y,z,r,col){let steps=9,rings=7;for(let k=0;k<rings;k++){let a=-Math.PI/2+k*Math.PI/rings,b=-Math.PI/2+(k+1)*Math.PI/rings;for(let j=0;j<steps;j++){let t=j*Math.PI*2/steps,u=(j+1)*Math.PI*2/steps;function pt(v,ang){return[x+r*Math.cos(v)*Math.cos(ang),y+r*Math.sin(v),z+r*Math.cos(v)*Math.sin(ang)]}let A=pt(a,t),B=pt(a,u),C=pt(b,u),D=pt(b,t);quad(A,B,C,D,shade(col,.75+.25*Math.sin(b)+.1*Math.cos(t)))}}}
+function strip(x,z,x2,z2,width,col,y=.02){let dx=x2-x,dz=z2-z,n=Math.hypot(dx,dz)||1,ox=-dz/n*width/2,oz=dx/n*width/2;quad([x+ox,y,z+oz],[x2+ox,y,z2+oz],[x2-ox,y,z2-oz],[x-ox,y,z-oz],col)}
+const white=[.97,.98,1],grass=[.075,.44,.24];
+const FIELD_HALF_X=14,FIELD_HALF_Z=25.5,GOAL_W=3.35;
+function field(){
+ for(let i=0;i<30;i++)box(0,-.16,-25.5+i*1.7,28,.3,1.7,i%2?[.07,.43,.22]:[.09,.51,.27]);
+ for(let x of [-14,14])strip(x,-25.5,x,25.5,.16,white);
+ for(let z of [-25.5,25.5])strip(-14,z,14,z,.16,white);
+ strip(-14,0,14,0,.14,white);
+ for(let k=0;k<56;k++){let a=k*2*Math.PI/56,b=(k+1)*2*Math.PI/56;strip(3.4*Math.cos(a),3.4*Math.sin(a),3.4*Math.cos(b),3.4*Math.sin(b),.11,white)}
+ for(let sign of [-1,1]){
+  let z=sign*25.5,z2=sign*17.2;
+  strip(-6,z,-6,z2,.13,white);strip(6,z,6,z2,.13,white);strip(-6,z2,6,z2,.13,white);
+  goal(z,sign);sphere(0,.05,sign*20,.14,white);
+ }
+ for(let z=-22;z<=22;z+=4){box(-15,.45,z,.24,.7,2.4,[.07,.56,.72]);box(15,.45,z,.24,.7,2.4,[.12,.35,.65])}
+}
+
+function goal(z,sign){
+ const post=[1,1,1],net=[.73,.89,.98];
+ for(let x of [-GOAL_W,GOAL_W]){
+  box(x,1.45,z,.30,2.9,.30,post);
+  box(x,1.45,z+sign*2.4,.06,2.9,.06,net);
+  box(x,2.87,z+sign*1.2,.07,.07,2.4,net);
+ }
+ box(0,2.9,z,GOAL_W*2+.25,.3,.3,post);
+ box(0,2.9,z+sign*2.4,GOAL_W*2,.07,.07,net);
+ for(let i=0;i<=12;i++){
+  const x=-GOAL_W+i*GOAL_W*2/12;
+  box(x,1.45,z+sign*2.4,.028,2.9,.028,net);
+  box(x,2.9,z+sign*1.2,.028,.028,2.4,net);
+ }
+ for(let j=0;j<=7;j++)box(0,j*2.9/7,z+sign*2.4,GOAL_W*2,.026,.03,net);
+}
+
+function actor(x,z,team,num,t,keeper=false){
+ const club=CLUBS[team],shirt=keeper?[.98,.85,.04]:club.shirt,shorts=keeper?[.14,.14,.18]:club.trim,skin=num%3===0?[.47,.27,.17]:num%3===1?[.92,.67,.48]:[.72,.42,.27];
+ const stride=Math.sin(t)*.19;
+ // Distinct jersey, shorts, socks, head, hair, shoes, shoulders and number patch
+ box(x,1.38,z,.83,.93,.46,shirt);box(x,1.68,z+.24,.4,.09,.04,club.trim);
+ box(x,.86,z,.7,.29,.47,shorts);
+ box(x-.2,.47,z+stride,.25,.7,.27,skin);box(x+.2,.47,z-stride,.25,.7,.27,skin);
+ box(x-.2,.22,z+stride,.27,.35,.29,club.shirt);box(x+.2,.22,z-stride,.27,.35,.29,club.shirt);
+ box(x-.2,.08,z+stride+.13,.36,.13,.5,[.065,.09,.13]);box(x+.2,.08,z-stride+.13,.36,.13,.5,[.065,.09,.13]);
+ box(x-.52,1.36,z,.22,.7,.23,skin);box(x+.52,1.36,z,.22,.7,.23,skin);
+ sphere(x,2.05,z,.33,skin);sphere(x,2.32,z-.06,.26,[.1,.075,.06]);
+ box(x,1.35,z+.245,.16,.22,.025,[.96,.96,.95]);
+ if(keeper){box(x-.56,1.08,z+.05,.22,.18,.35,[.95,.95,.95]);box(x+.56,1.08,z+.05,.22,.18,.35,[.95,.95,.95])}
+}
+
+function stands(){
+ // Big stands on the far sideline. No near-camera structure can hide a goal.
+ box(-25,1,0,14,4,64,[.10,.17,.29]);
+ box(-30,6,0,13,5,66,[.17,.24,.38]);
+ box(-35,11,0,11,5,68,[.12,.18,.29]);
+ for(let z=-30;z<=30;z+=2){
+  box(-23.8,3.4,z,2,.48,1.55,(Math.abs(z)%6)?[.13,.45,.84]:[.94,.76,.22]);
+  box(-28.8,8.2,z,2,.48,1.55,(Math.abs(z)%4)?[.85,.19,.35]:[.76,.86,.97]);
+  box(-33.8,13.2,z,2,.48,1.55,(Math.abs(z)%6)?[.09,.54,.71]:[.92,.88,.75]);
+ }
+ box(-37.5,15,0,4,.7,74,[.08,.12,.20]);
+ for(let z of [-32,32]){
+  box(-23,10,z,.42,20,.42,[.44,.51,.59]);box(-23,20,z,5,.45,1.5,[.94,.95,.82]);
+  for(let j=0;j<4;j++)sphere(-25+j*1.3,20,z+.6,.42,[1,.97,.73]);
+ }
+ // End spectator banks are placed far behind the nets.
+ for(let z of [-38,38]){
+  box(-8,2,z,37,5,8,[.14,.20,.31]);box(-8,6,z,39,3,8,[.22,.28,.4]);
+  for(let x=-24;x<10;x+=2)box(x,5,z,1.4,.4,2,[.10,.48,.76]);
+ }
+}
+
+let you={x:0,z:7,number:9},foes=[],mates=[],keeperHome={x:0,z:24.1,keeper:true},keeperAway={x:0,z:-24.1,keeper:true},ball={x:0,z:6,vx:0,vz:0,free:false,side:0,carrier:0},score=[0,0],playing=false,axis={x:0,z:0},running=false,kickCD=0,clock=0,noticeTime=0,possessTimeout=0,selected=0,secondSelected=0,aiTimer=0,keeperDive=[0,0],keeperDiveX=[0,0],freeze=0;
+const SIDE_X=13.45,SIDE_Z=24.9,HOME_GOAL=25.5,AWAY_GOAL=-25.5;
+function team(side){return side===0?[you,...mates,keeperHome]:[...foes,keeperAway]}
+function control(side){return team(side)[side===0?selected:secondSelected]}
+function updateScore(){document.getElementById('score').textContent=score[0]+' : '+score[1];document.getElementById('teamleft').textContent=CLUBS[homeIndex].name;document.getElementById('teamright').textContent=CLUBS[awayIndex].name}
+function toast(s){notice.textContent=s;noticeTime=1.45}
+function reset(){
+ you={x:0,z:8,number:9};mates=[{x:-8,z:5,number:7},{x:8,z:6,number:10},{x:0,z:16,number:4}];
+ foes=[{x:0,z:-8,number:9},{x:-8,z:-6,number:7},{x:8,z:-7,number:10},{x:0,z:-17,number:4}];
+ keeperHome={x:0,z:24.0,keeper:true,number:1};keeperAway={x:0,z:-24.0,keeper:true,number:1};
+ ball={x:0,z:7.5,vx:0,vz:0,free:false,side:0,carrier:0,y:.3};selected=0;secondSelected=0;
+ aiTimer=0;possessTimeout=.6;kickCD=.3;keeperDive=[0,0];freeze=.3;updateScore();
+}
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+function near(a,b){return Math.hypot(a.x-b.x,a.z-b.z)}
+function movePlayer(o,dx,dz,dt,speed){let n=Math.max(1,Math.hypot(dx,dz));let xlim=o.keeper?4:SIDE_X,zlim=o.keeper?24.5:SIDE_Z;o.x=Math.max(-xlim,Math.min(xlim,o.x+dx/n*dt*speed));o.z=Math.max(-zlim,Math.min(zlim,o.z+dz/n*dt*speed))}
+function gain(side,index,text){ball.free=false;ball.side=side;ball.carrier=index;possessTimeout=.6;kickCD=.18;if(text)toast(text)}
+function releaseBall(side,index,tx,tz,power,label){if(!playing||paused||ball.free||ball.side!==side||ball.carrier!==index)return false;
+ const o=team(side)[index],d=Math.hypot(tx-o.x,tz-o.z)||1;
+ ball.free=true;ball.side=-1;ball.carrier=-1;ball.x=o.x;ball.z=o.z;ball.vx=(tx-o.x)/d*power;ball.vz=(tz-o.z)/d*power;ball.y=.3;kickCD=.48;possessTimeout=.45;
+ if(label)toast(label);return true}
+function kick(power,side=0){
+ if(!playing||paused)return;
+ const ps=team(side),selectedIndex=side===0?selected:secondSelected;
+ let index=selectedIndex;
+ if(!ball.free&&ball.side===side)index=ball.carrier;
+ else if(ball.free){let n=nearest(side,ball);if(n.distance>2.1){toast('ACÉRCATE AL BALÓN');return;}index=n.index;gain(side,index)}
+ else {toast('RECUPERA LA PELOTA');return;}
+ const o=ps[index];
+ if(power>10){
+  // The goal is wide; aim towards a gap rather than straight at the keeper.
+  const direction=side===0?-1:1;
+  let aim=clamp(o.x*.18 + (Math.random()-.5)*3.2,-GOAL_W+.45,GOAL_W-.45);
+  releaseBall(side,index,aim,direction*31,24,'⚽ ¡DISPARO AL ARCO!');
+ }else{
+  let target;
+  if(selectedIndex!==index && !ps[selectedIndex].keeper){target={p:ps[selectedIndex],i:selectedIndex};}
+  else{
+   const direction=side===0?-1:1;
+   let options=ps.map((p,i)=>({p,i,distance:near(p,o),advance:(p.z-o.z)*direction})).filter(t=>t.i!==index&&t.distance>2);
+   options.sort((a,b)=>(b.advance*2-b.distance*.10)-(a.advance*2-a.distance*.10));
+   target=options[0];
+  }
+  if(!target){toast('NO HAY COMPAÑERO DISPONIBLE');return;}
+  releaseBall(side,index,target.p.x,target.p.z,17,'↗ PASE AL Nº '+target.p.number);
+  // Control only moves when the user explicitly touches CAMBIO.
+ }
+}
+function change(side){if(!playing||paused)return;let list=team(side);if(side===0){selected=(selected+1)%5;toast(list[selected].keeper?'¡CONTROLAS AL PORTERO!':'JUGADOR '+list[selected].number)}else secondSelected=(secondSelected+1)%5}
+function nearest(side,point,exclude=-1){let ps=team(side),best=-1,dist=Infinity;ps.forEach((p,i)=>{if(i===exclude)return;let d=near(p,point);if(d<dist){dist=d;best=i}});return {index:best,distance:dist}}
+function aiDecision(side){if(ball.free||ball.side!==side)return;const index=ball.carrier,ps=team(side),o=ps[index],direction=side===0?-1:1;
+ if(side===0&&index===selected)return;if(side===1&&localTwo&&index===secondSelected)return;
+ const opponent=team(1-side),pressure=Math.min(...opponent.map(t=>near(t,o)));
+ const goalDistance=Math.abs((side===0?AWAY_GOAL:HOME_GOAL)-o.z);
+ if(index===4){const candidates=ps.slice(0,4).map((p,i)=>({p,i})).sort((a,b)=>Math.abs(a.p.x-o.x)-Math.abs(b.p.x-o.x));let pick=candidates[0];releaseBall(side,index,pick.p.x,pick.p.z,10,'¡SAQUE DEL PORTERO!');return}
+ if(goalDistance<17&&Math.abs(o.x)<8){releaseBall(side,index,clamp(o.x*.15+(Math.random()-.5)*3.8,-GOAL_W+.3,GOAL_W-.3),side===0?-30:30,22,side===1?'¡LA CPU DISPARA!':'¡TIRO!');return}
+ if(pressure<2.8||Math.random()<.10){let choices=ps.slice(0,4).map((p,i)=>({p,i,advance:(p.z-o.z)*direction,space:Math.min(...opponent.map(t=>near(t,p)))})).filter(t=>t.i!==index);
+ choices.sort((a,b)=>(b.advance*1.2+b.space*.5)-(a.advance*1.2+a.space*.5));let pick=side===0&&index!==selected&&near(ps[selected],o)<17?{p:ps[selected],i:selected}:choices[0];if(pick)releaseBall(side,index,pick.p.x,pick.p.z,16,side===1?'¡PASE DE LA CPU!':'¡PASE DEL EQUIPO!')}
+}
+function keeperAI(dt){
+ for(let side=0;side<2;side++){
+  const g=team(side)[4],goal=side===0?HOME_GOAL:AWAY_GOAL;
+  const isHuman=(side===0&&selected===4)||(side===1&&localTwo&&secondSelected===4);
+  if(!isHuman){
+   let targetX=ball.free?ball.x+ball.vx*.15:ball.x*.6;
+   let diff=clamp(targetX,-GOAL_W+.25,GOAL_W-.25)-g.x;
+   g.x+=clamp(diff,-dt*2.3,dt*2.3);
+   g.z=side===0?24:-24;
+  }
+  keeperDive[side]=Math.max(0,keeperDive[side]-dt);
+  if(ball.free && ball.vz*(side===0?1:-1)>0 && Math.abs(ball.z-goal)<3.3 && Math.abs(ball.x)<GOAL_W+.4){
+   // Keepers only catch shots close to their actual position. Some shots score.
+   let keeperDistance=near(ball,g);
+   if(keeperDistance<1.12 && keeperDive[side]<=0 && Math.random()<dt*3.2){
+    keeperDive[side]=.62;keeperDiveX[side]=Math.sign(ball.x-g.x||1);
+    gain(side,4,side===0?'🧤 ¡ATAJADA!':'🧤 ¡PARÓ EL PORTERO!');
+    ball.x=g.x;ball.z=g.z;possessTimeout=.7;aiTimer=.7;
+   }else if(keeperDistance<2.4 && keeperDive[side]<=0){
+    keeperDive[side]=.5;keeperDiveX[side]=Math.sign(ball.x-g.x||1);
+   }
+  }
+ }
+}
+function update(dt){if(paused)return;clock+=dt;if(noticeTime>0){noticeTime-=dt;if(noticeTime<=0)notice.textContent=''}if(!playing)return;
+ if(freeze>0){freeze-=dt;return}
+ kickCD=Math.max(0,kickCD-dt);possessTimeout=Math.max(0,possessTimeout-dt);aiTimer-=dt;
+ let human=control(0),n=Math.max(1,Math.hypot(axis.x,axis.z));movePlayer(human,axis.z/n,-axis.x/n,dt,running?11:7);
+ if(localTwo){let h=control(1);movePlayer(h,secondAxis.z,-secondAxis.x,dt,secondRunning?11:7)}
+ const target=ball.free?ball:team(ball.side)[ball.carrier];
+ for(let side=0;side<2;side++){
+ let ps=team(side),dir=side===0?-1:1,controlled=side===0?selected:(localTwo?secondSelected:-1);
+ let pursuit=nearest(side,target,controlled).index;
+ for(let i=0;i<4;i++){
+ if(i===controlled)continue;
+ let a=ps[i],hasBall=!ball.free&&ball.side===side&&ball.carrier===i;
+ let tx,tz;
+ if(hasBall){tx=Math.max(-11,Math.min(11,a.x*.72));tz=a.z+dir*5}
+ else if(ball.free||ball.side!==side){if(i===pursuit){tx=target.x;tz=target.z}else{tx=Math.max(-11,Math.min(11,target.x*.42+[-9,8,1,-3][i]*.55));tz=(side===0?6:-6)+target.z*.25+i*dir*.9}}
+ else {let holder=team(side)[ball.carrier];tx=Math.max(-11,Math.min(11,holder.x+[-5,5,3,-3][i]));tz=Math.max(-23,Math.min(23,holder.z+dir*(2+i*1.8)))}
+ movePlayer(a,tx-a.x,tz-a.z,dt,hasBall?5:5.8)
+ }
+ }
+ keeperAI(dt);
+ if(!ball.free){let owner=team(ball.side)[ball.carrier],dir=ball.side===0?-1:1;ball.x=owner.x;ball.z=owner.z+dir*.56;ball.y=.3;
+ if(aiTimer<=0){aiTimer=1.05+Math.random()*.65;aiDecision(ball.side)}}
+ else {ball.x+=ball.vx*dt;ball.z+=ball.vz*dt;let drag=Math.pow(.85,dt);ball.vx*=drag;ball.vz*=drag;ball.y=.29+.05*Math.sin(clock*20)**2;
+ if(Math.abs(ball.x)>13.65){ball.x=Math.sign(ball.x)*13.65;ball.vx*=-.65}
+ if(Math.abs(ball.z)>25.7){if(Math.abs(ball.x)<GOAL_W){let scoring=ball.z<0?0:1;score[scoring]++;toast(scoring===0?'⚽ ¡GOOOOOL!':'⚽ GOL DE LA CPU');reset();freeze=1.1;return}else{toast('SAQUE DE META');let side=ball.z<0?1:0;gain(side,4);ball.x=0;ball.z=side===0?24:-24}}
+ if(kickCD<=0&&ball.free){let candidates=[];for(let side=0;side<2;side++)team(side).forEach((o,i)=>{let distance=near(ball,o);if(distance<(i===4?1.3:.94))candidates.push({side,i,distance})});candidates.sort((a,b)=>a.distance-b.distance);if(candidates.length){gain(candidates[0].side,candidates[0].i);aiTimer=.5}}
+ }
+ if(!ball.free&&kickCD<=0){let attacking=ball.side,owner=team(attacking)[ball.carrier],defending=1-attacking;
+ let defender=nearest(defending,owner);let p=team(defending)[defender.index];
+ if(defender.distance<.9&&Math.random()<dt*2.3){gain(defending,defender.index,defending===0?'¡ROBO DE NUESTRO EQUIPO!':'¡ROBO DE LA CPU!');aiTimer=.8}
+ }
+}
+
+function render(){let w=canvas.clientWidth,h=canvas.clientHeight,d=Math.min(window.devicePixelRatio||1,1.6),cw=Math.round(w*d),ch=Math.round(h*d);if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch}gl.viewport(0,0,cw,ch);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);let aspect=cw/ch;let eye=[aspect>1?58:76,aspect>1?31:48,0],center=[0,0,0];const vp=mul(perspective(aspect>1?Math.PI/2.85:Math.PI/2.45,aspect,.1,180),lookAt(eye,center,[0,1,0]));gl.uniformMatrix4fv(uVP,false,vp);verts=[];stands();field();
+ foes.forEach((f,i)=>actor(f.x,f.z,awayIndex,f.number,clock*6+i));mates.forEach((m,i)=>actor(m.x,m.z,homeIndex,m.number,clock*6+i));actor(keeperHome.x,keeperHome.z,homeIndex,1,clock*2,true);actor(keeperAway.x,keeperAway.z,awayIndex,1,clock*2,true);actor(you.x,you.z,homeIndex,9,clock*8);
+ // Bright 3D selection arrow above controlled player, visible from the broadcast camera.
+ const chosen=control(0);const bounce=.2*Math.sin(clock*5);box(chosen.x,3.35+bounce,chosen.z,.6,.12,.6,[1,.92,.04]);
+ tri([chosen.x-.55,3.62+bounce,chosen.z],[chosen.x+.55,3.62+bounce,chosen.z],[chosen.x,2.98+bounce,chosen.z],[1,.95,.1]);
+ if(localTwo){let opponent=control(1);box(opponent.x,3.4,opponent.z,.6,.12,.6,[1,.35,.45]);}
+ if(keeperDive[0]>0){box(keeperHome.x+keeperDiveX[0]*.8,1.05,keeperHome.z,1.45,.2,.5,[.96,.76,.12])}
+ if(keeperDive[1]>0){box(keeperAway.x+keeperDiveX[1]*.8,1.05,keeperAway.z,1.45,.2,.5,[.96,.76,.12])}sphere(ball.x,ball.y||.27,ball.z,.255,[.99,.98,.94]);sphere(ball.x+.09,(ball.y||.27)+.15,ball.z+.03,.065,[.05,.07,.1]);
+ gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.DYNAMIC_DRAW);gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(aColor,3,gl.FLOAT,false,24,12);gl.drawArrays(gl.TRIANGLES,0,verts.length/6)}
+
+function setPause(value){if(!playing)return;paused=value;document.getElementById('pauseMenu').style.display=paused?'flex':'none';document.getElementById('pauseButton').textContent=paused?'▶ VOLVER':'Ⅱ PAUSA';axis.x=axis.z=0;secondAxis.x=secondAxis.z=0;running=false;secondRunning=false;}
+document.getElementById('pauseButton').addEventListener('click',()=>setPause(!paused));
+document.getElementById('resumeButton').addEventListener('click',()=>setPause(false));
+document.getElementById('restartButton').addEventListener('click',()=>{score=[0,0];reset();setPause(false);toast('¡PARTIDO REINICIADO!')});
+document.getElementById('menuButton').addEventListener('click',()=>{setPause(false);playing=false;menu.style.display='flex';document.getElementById('pauseButton').style.display='none';document.getElementById('notice').textContent=''});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.repeat){e.preventDefault();setPause(!paused)}});
+let padPauseHeld=false;function readPadPause(){let buttons=navigator.getGamepads?.();let press=buttons&&Array.from(buttons).some(p=>p?.buttons[9]?.pressed);if(press&&!padPauseHeld)setPause(!paused);padPauseHeld=!!press}
+let previous=0;function frame(now){let dt=Math.min(.05,(now-previous)/1000||.016);previous=now;update(dt);render();requestAnimationFrame(frame)}
+const stick=document.getElementById('stick'),nub=document.getElementById('nub');let pointer=null;function move(e){let r=stick.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,z=e.clientY-r.top-r.height/2,limit=r.width*.3,mag=Math.hypot(x,z),factor=mag>limit?limit/mag:1;x*=factor;z*=factor;axis.x=x/limit;axis.z=z/limit;nub.style.transform='translate('+x+'px,'+z+'px)'}stick.addEventListener('pointerdown',e=>{pointer=e.pointerId;stick.setPointerCapture(pointer);move(e)});stick.addEventListener('pointermove',e=>{if(pointer===e.pointerId)move(e)});function release(e){if(pointer!==e.pointerId)return;pointer=null;axis.x=axis.z=0;nub.style.transform=''}stick.addEventListener('pointerup',release);stick.addEventListener('pointercancel',release);// iPad Safari: press actions on pointerdown (rather than relying only on synthetic click).
+// The subsequent click is suppressed so one touch never shoots/passes twice.
+function tapAction(id,fn){
+ const el=document.getElementById(id);let lastPress=0;
+ el.setAttribute('type','button');
+ el.addEventListener('pointerdown',e=>{
+   if(e.cancelable)e.preventDefault();e.stopPropagation();lastPress=Date.now();
+   if(!playing||paused){toast('INICIA O REANUDA EL PARTIDO');return;}
+   fn();
+ },{passive:false});
+ el.addEventListener('click',e=>{
+   if(e.cancelable)e.preventDefault();e.stopPropagation();
+   if(Date.now()-lastPress<650)return;
+   if(!playing||paused){toast('INICIA O REANUDA EL PARTIDO');return;}
+   fn();
+ });
+ el.addEventListener('contextmenu',e=>e.preventDefault());
+}
+tapAction('shoot',()=>kick(15));
+tapAction('pass',()=>kick(7));
+tapAction('switch',()=>change(0));
+const sprint=document.getElementById('sprint');
+sprint.setAttribute('type','button');
+sprint.addEventListener('pointerdown',e=>{if(e.cancelable)e.preventDefault();running=true;sprint.setPointerCapture(e.pointerId)},{passive:false});
+sprint.addEventListener('pointerup',()=>running=false);
+sprint.addEventListener('pointercancel',()=>running=false);
+sprint.addEventListener('lostpointercapture',()=>running=false);
+sprint.addEventListener('contextmenu',e=>e.preventDefault());let secondAxis={x:0,z:0},secondRunning=false,padState=[{},{ }];let keys={};window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' ')kick(15);if(e.key.toLowerCase()==='j')kick(7);if(e.key.toLowerCase()==='q'&&!e.repeat)change(0)});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);function readKeys(){
+ secondAxis.x=Number(!!secondKeys.arrowright)-Number(!!secondKeys.arrowleft);secondAxis.z=Number(!!secondKeys.arrowdown)-Number(!!secondKeys.arrowup);secondRunning=!!secondKeys.o;
+ if(isPC&&navigator.getGamepads){let pads=navigator.getGamepads();let a=pads[0],b=pads[1];if(a){axis.x=Math.abs(a.axes[0]||0)>.12?a.axes[0]:0;axis.z=Math.abs(a.axes[1]||0)>.12?a.axes[1]:0;running=!!a.buttons[5]?.pressed;if(a.buttons[2]?.pressed&&!padState[0].wasSwitch){change(0);padState[0].wasSwitch=true}else if(!a.buttons[2]?.pressed)padState[0].wasSwitch=false;if(a.buttons[0]?.pressed&&!padState[0].wasShoot){kick(15,0);padState[0].wasShoot=true}else if(!a.buttons[0]?.pressed)padState[0].wasShoot=false;if(a.buttons[1]?.pressed&&!padState[0].wasPass){kick(7,0);padState[0].wasPass=true}else if(!a.buttons[1]?.pressed)padState[0].wasPass=false;}
+ if(b&&localTwo){secondAxis.x=Math.abs(b.axes[0]||0)>.12?b.axes[0]:0;secondAxis.z=Math.abs(b.axes[1]||0)>.12?b.axes[1]:0;secondRunning=!!b.buttons[5]?.pressed;if(b.buttons[2]?.pressed&&!padState[1].wasSwitch){change(1);padState[1].wasSwitch=true}else if(!b.buttons[2]?.pressed)padState[1].wasSwitch=false;if(b.buttons[0]?.pressed&&!padState[1].wasShoot){kick(15,1);padState[1].wasShoot=true}else if(!b.buttons[0]?.pressed)padState[1].wasShoot=false;if(b.buttons[1]?.pressed&&!padState[1].wasPass){kick(7,1);padState[1].wasPass=true}else if(!b.buttons[1]?.pressed)padState[1].wasPass=false;}}
+ if(pointer===null&&(isPC||keys.w||keys.a||keys.s||keys.d)){axis.x=Number(!!keys.d)-Number(!!keys.a);axis.z=Number(!!keys.s)-Number(!!keys.w)}if(isPC)running=!!keys.shift||running&&pointer!==null}function main(t){readKeys();frame(t);}
+// Render WebGL with visible diagnostics if the scene throws an error.
+function tick(t){try{let dt=Math.min(.05,(t-previous)/1000||.016);previous=t;readKeys();readPadPause();update(dt);render();requestAnimationFrame(tick)}catch(e){document.getElementById('hint').textContent='Error 3D: '+e.message;document.getElementById('status').textContent='Error 3D: '+e.message;}}
+if(location.hash.includes('pc')){
+ isPC=true;document.title='SMF PC — Copa Mega 3D';document.getElementById('edition').textContent='PC 3D · COPA MEGA 5V5';document.getElementById('bottom').style.display='none';document.getElementById('hint').textContent='J1: WASD · J pase · ESPACIO tiro · Q cambiar · SHIFT correr | J2: flechas · K pase · L tiro · C cambiar · O correr | Mandos: sticks y botones';
+ const toggle=document.createElement('label');toggle.style.cssText='display:block;margin:10px;color:#bdebd6;font-weight:800';toggle.innerHTML='<input id="twoplayer" type="checkbox"> 2 jugadores locales (misma PC)';launchButton.before(toggle);localTwo=false;
+ document.getElementById('twoplayer').addEventListener('change',e=>localTwo=e.target.checked);
+ window.addEventListener('keydown',e=>{let k=e.key.toLowerCase();secondKeys[k]=true;if(localTwo&&k==='l')kick(15,1);if(localTwo&&k==='k')kick(7,1);if(localTwo&&k==='c'&&!e.repeat)change(1)});window.addEventListener('keyup',e=>secondKeys[e.key.toLowerCase()]=false);
+}
+requestAnimationFrame(tick);
+})();
+</script></body></html>
